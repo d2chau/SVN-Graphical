@@ -6,7 +6,7 @@
  * This Items container is for each of those specific items.
  * 
  * This class contains additional functions to assist with the retrieval 
- * and setting of item information. 
+ * and manipulation of item information. 
  * 
  * Author(s): David Chau 
  */
