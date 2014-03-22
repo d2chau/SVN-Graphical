@@ -1,11 +1,12 @@
 /**
  * File: Main.java
+ * 
  * Description: This program connects to a SVN server and retrieves information
- * which is later saved into a file. Once the file is finished being written to
- * a connection is made to the mySQL database using JDBC connections, parses the
- * file into projects and uploads it to the mySQL database; making sure that it 
- * either updates or inserts the correct information.
- * Author(s): An Nguyen, David Chau 
+ * which is later saved into a file with a JSON format. Once the file is 
+ * finished being written, a website will use those JSON files and display the
+ * graph accordingly. 
+ * 
+ * Author(s): David Chau 
  */
 
 package SVN.graphical;

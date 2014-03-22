@@ -1,3 +1,15 @@
+/**
+ * File: SVNFunctionality.java
+ * 
+ * Description: This program connects to a SVN server and retrieves information
+ * which is later saved into a file. Once the file is finished being written to
+ * a connection is made to the mySQL database using JDBC connections, parses the
+ * file into projects and uploads it to the mySQL database; making sure that it 
+ * either updates or inserts the correct information.
+ * 
+ * Author(s): An Nguyen, David Chau 
+ */
+
 package SVN.graphical;
 
 import java.io.File;
@@ -26,8 +38,15 @@ import org.tmatesoft.svn.core.wc.SVNWCUtil;
 //a class that control all needed functions
 public class SVNFunctionality{
   private static Repository repo;
-  private static SVNRepository svnRepo=null;
+  private static SVNRepository svnRepo = null;
   
+  /**
+   * Makes a connection to each of the repositories and calls helper function
+   * to put the correct information in pertaining containers. 
+   * 
+   * @throws SVNException If the repository could not be connected with, a SVN
+   *                      Exception is thrown.
+   */
   public static void connectToRepo() throws SVNException{
     //Declaring local variables so a new instantiation does not need to be made
     //each time
@@ -68,6 +87,8 @@ public class SVNFunctionality{
       } catch (IOException e) {
         e.printStackTrace();
       }
+      
+      System.out.println("Closing connection to SVN server...\n");      
     }
     writeHttpJSONFile();
     writeProjectJSONFile();
@@ -76,7 +97,6 @@ public class SVNFunctionality{
   @SuppressWarnings({ "finally", "unchecked" })
   public static boolean listPrj(SVNRepository svnRepo) throws SVNException, IOException{
     boolean localFlag = false;
-    
     Project tempProject = new Project();
     
     // Creating a list of project names
@@ -85,11 +105,12 @@ public class SVNFunctionality{
 
     // Using iterator to handle traverse in the pr_names list
     Iterator<?> itr=pr_names_list.iterator();
+    
     //David's File
     File myfile = new File("C:/Users/d2chau/Desktop/all_output.txt");
     FileWriter jsonFile = null;
 
-    // If the file exist delete it
+    // If the file exist delete it first
     if (myfile.exists()){
       myfile.delete();     
     }
@@ -130,21 +151,14 @@ public class SVNFunctionality{
         
         // Access each project to output trunk, tags and branches
         listElemPrj(svnRepo, "/"+prjName.getName(), dir_lev, tempProject, ps, jsonObj);
-        //ps.println("<prend>");
         
         repo.addProject(tempProject);
         tempProject = new Project();
         
         jsonFile.write(jsonObj.toJSONString());
-        System.out.println(jsonObj.toJSONString());
  
         localFlag = false;
- 
-        // Convert (long) revision numbers into strings
-        //String str=prjName.getRevision()+"";
       }
-      //out.flush();
-      //out.close();
       localFlag = true;
     }
     catch (FileNotFoundException e) 
@@ -154,8 +168,6 @@ public class SVNFunctionality{
     finally{
       if(ps != null){
         ps.close();
-        //jsonFile.write(jsonObj.toJSONString());
-        //jsonFile.flush();
         jsonFile.close();
       }
       return localFlag;
@@ -306,7 +318,7 @@ public class SVNFunctionality{
        ps.println(";" + dateFormat.format(dName.getDate()));
      }
 
-     // Check if a directory
+     // Check if current selected item is a directory
      if (dName.getKind()==SVNNodeKind.DIR)
      {
        if (url==""){
@@ -320,8 +332,10 @@ public class SVNFunctionality{
    }
   }
   
-  //Goes to svn repo and tries to retrieve information to make sure it is
-  //connected and working properly
+  /**
+   * This function goes to the Subversion Repository and tries to retrieve
+   * information to make sure it is connected and working properly. 
+   */
   private static void testSVNFunction(){
     try {
       System.out.println("Established Connection to: " 
@@ -335,7 +349,11 @@ public class SVNFunctionality{
     }
   }
   
-  //This will be called by each repo to make it all in one file
+  /**
+   * This function creates the httpjson file that is used to display to user
+   * on the website. Thi function will be called by each of the repositories to
+   * make it all in one file.
+   */
   @SuppressWarnings("unchecked")
   private static void writeHttpJSONFile(){
     JSONObject httpJSONObject = new JSONObject();
@@ -360,6 +378,10 @@ public class SVNFunctionality{
     }
   }
   
+  /**
+   * Writes the JSON files of each of the Repository. This file will be called
+   * multiple times to write a JSON file for each of the repositories. 
+   */
   private static void writeProjectJSONFile(){
     JSONObject parentJObj = new JSONObject();
     JSONObject tempJObj = new JSONObject();
