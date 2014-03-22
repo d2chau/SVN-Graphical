@@ -1,20 +1,22 @@
+/**
+ * File: Repository.java
+ * 
+ * Description: A repository container which contains all information that a
+ *              repository contains such as a location and projects.
+ * 
+ * Author(s): David Chau 
+ */
+
 package SVN.graphical;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 
 public class Repository {
   private HttpControl httpObj;
   private ArrayList<HttpControl> httpArrayObj = new ArrayList<HttpControl>();
-  private JSONObject repoJSONObject;
-  private JSONObject httpJSONObject;
-  private JSONArray projects;
   private ArrayList<Project> projectsList = new ArrayList<Project>();
 
   //Default constructor which will parse the http config file when called upon.
@@ -22,6 +24,10 @@ public class Repository {
     parseHTTPFile();
   }
   
+  /**
+   * Scans the http configuration file and puts all relevant data into its
+   * container.
+   */
   private void parseHTTPFile(){
     System.out.println("Parsing your httpConfig file has been parsed!");
 
@@ -58,7 +64,6 @@ public class Repository {
         case 1:
           for(int i=0; i<sCurrentLine.length(); ++i){
             if(sCurrentLine.charAt(i) == ':'){
-              //System.out.println(sCurrentLine.substring(i+1, sCurrentLine.length()));
               tempStr = sCurrentLine.substring(i+2, sCurrentLine.length());
               httpObj.setAlias(tempStr);
             }
@@ -70,7 +75,6 @@ public class Repository {
         case 2:
           for(int i=0; i<sCurrentLine.length(); ++i){
             if(sCurrentLine.charAt(i) == ':'){
-              //System.out.println(sCurrentLine.substring(i+1, sCurrentLine.length()));
               tempStr = sCurrentLine.substring(i+2, sCurrentLine.length());
               httpObj.setUserName(tempStr);
             }
@@ -81,7 +85,6 @@ public class Repository {
         case 3:
           for(int i=0; i<sCurrentLine.length(); ++i){
             if(sCurrentLine.charAt(i) == ':'){
-              //System.out.println(sCurrentLine.substring(i+1, sCurrentLine.length()));
               tempStr = sCurrentLine.substring(i+2, sCurrentLine.length());
               httpObj.setPW(tempStr);
             }
@@ -112,39 +115,41 @@ public class Repository {
     }
   }
   
+  /**
+   * Returns the Alias of the repository read from the http configuration file.
+   * 
+   * @return A string of the alias belonging to a repository.
+   */
   protected String getAlias(){
     return httpObj.getAlias();
   }
-  
-  private String getRepoHTTPAddress(){
-    return httpObj.getHTTPAddr();
-  }
-  
-  private String getUserName(){
-    return httpObj.getUserName();
-  }
-  
-  private String getPassword(){
-    return httpObj.getPW();
-  }
-  
+
+  /**
+   * Returns a List of http objects which are used for outputting the http JSON
+   * file.
+   * @return ArrayList of HttpControl Class objects to be used for the JSON
+   *         output file.
+   */
   protected ArrayList<HttpControl> getHttpArrayList(){
     return httpArrayObj;
   }
   
+  /**
+   * Returns the list of projects that are within one repository
+   * 
+   * @return List of projects within a repository
+   */
   protected ArrayList<Project> getProjectArrayList(){
     return projectsList;
   }
-  
-  private JSONArray getJSONRepoObjects(){
-    return projects;
-  }
 
+  /**
+   * Adds in a new project class to the repository
+   * 
+   * @param proj  A project that contains all of its information i.e. Name,
+   *              Date, Revision number for itself and all of its items.
+   */
   protected void addProject(Project proj){
     this.projectsList.add(proj);
-  }
-  
-  private void addProjectName(String projectName){
-    projects.add(projectName);
   }
 }
