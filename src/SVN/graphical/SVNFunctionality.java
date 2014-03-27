@@ -94,6 +94,23 @@ public class SVNFunctionality{
     writeProjectJSONFile();
   }
   
+  /**
+   * Function used to retrieve the necessary information from the repository at
+   * the base level. It will get a repository to connect to and call the 
+   * listElemPrj function in it to get items within a project. This function
+   * will also create both a text and JSON file for the user and web
+   * application. 
+   * 
+   * @param svnRepo Repository that the user would like to connect with
+   * @return  Returns true is the traversal and retrieval of information was
+   *          successful.
+   *          Returns false otherwise.
+   *          
+   * @throws SVNException Throws SVN Exception due to function call to 
+   *                      listElemPrj which will tell the user the stack error.
+   * @throws IOException  Throws IO Exception if the creation or closing of the
+   *                      file was not properly done.
+   */
   @SuppressWarnings({ "finally", "unchecked" })
   public static boolean listPrj(SVNRepository svnRepo) throws SVNException, IOException{
     boolean localFlag = false;
@@ -134,23 +151,20 @@ public class SVNFunctionality{
         // Printing project names
         tempProject.setProjectName(prjName.getName());
         jsonObj.put("name", prjName.getName());
-        //ps.print("<pr>"+prjName.getName());
         
         //retrieving date
         tempProject.setProjectDate(dateFormat.format(prjName.getDate()));
         jsonObj.put("date", dateFormat.format(prjName.getDate()));
-        //ps.println(";" + dateFormat.format(prjName.getDate()));
         
         // Printing latest revision of the project
         tempProject.setProjectRevNum(prjName.getRevision());
         jsonObj.put("revNum", prjName.getRevision());
-        //ps.print(";" + prjName.getRevision());
         
         // keep track directory level
         int dir_lev=0;
         
         // Access each project to output trunk, tags and branches
-        listElemPrj(svnRepo, "/"+prjName.getName(), dir_lev, tempProject, ps, jsonObj);
+        listElemPrj(svnRepo, "/"+prjName.getName(), dir_lev, tempProject, ps);
         
         repo.addProject(tempProject);
         tempProject = new Project();
@@ -174,8 +188,28 @@ public class SVNFunctionality{
     }
   }
   
+  /**
+   * This function will query the repository and will recursively traverse
+   * deeper to retrieve more files/folders. While traversing the repository,
+   * this function will also start to insert the items and projects within the
+   * repository into its corresponding container.
+   * 
+   * @param repo  Repository that is wanting to be traversed.
+   * @param url   Recursive parameter which starts off as "" to be at the base
+   *              level.
+   * @param level A counter to keep track of how far down the function has 
+   *              traversed.
+   * @param tempProject Temporary project used to store information from and
+   *                     will be used to copy from once traversal is complete.
+   * @param ps    PrintStream used for debugging and printing to a file the
+   *              files/folders within the directory
+   *              
+   * @throws SVNException If the repository cannot get into a directory or has
+   *                      or cannot connect to the directory, an exception will
+   *                      be thrown.
+   */
   public static void listElemPrj(SVNRepository repo, String url, int level, Project tempProject,
-      PrintStream ps, JSONObject jsonObj) throws SVNException{
+      PrintStream ps) throws SVNException{
    // Creating a list of directories
    // trunk, tags and branches
    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -322,11 +356,11 @@ public class SVNFunctionality{
      if (dName.getKind()==SVNNodeKind.DIR)
      {
        if (url==""){
-         listElemPrj(repo, dName.getName(), level, tempProject, ps, jsonObj);
+         listElemPrj(repo, dName.getName(), level, tempProject, ps);
        }
        // Access sub-directories if available and get directory name
        else{
-         listElemPrj(repo, url+"/"+dName.getName(), level, tempProject, ps, jsonObj);   
+         listElemPrj(repo, url+"/"+dName.getName(), level, tempProject, ps);   
        }
      }
    }
