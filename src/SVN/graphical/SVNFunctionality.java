@@ -194,7 +194,7 @@ public class SVNFunctionality{
       if(ps != null){
         ps.close();
       }
-      System.out.println("Finished creating " + myfile);
+      System.out.println("Finished creating " + myfile + '\n');
 
       return localFlag;
     }
@@ -419,7 +419,7 @@ public class SVNFunctionality{
       file.write(httpJSONObject.toJSONString());
       file.flush();
       file.close();
-      System.out.println("Finished creating " + cwd + httpJsonFile);
+      System.out.println("Finished creating " + cwd + httpJsonFile + '\n');
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -461,7 +461,7 @@ public class SVNFunctionality{
       file.write(parentJObj.toJSONString());
       file.flush();
       file.close();
-      System.out.println("Finished creating " + fileLocation);
+      System.out.println("Finished creating " + fileLocation + '\n');
     } catch (IOException e) {
       e.printStackTrace();
     }
