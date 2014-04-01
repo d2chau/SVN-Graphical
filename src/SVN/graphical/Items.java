@@ -39,7 +39,7 @@ public class Items {
   Items(List<String> inputList){
     if(!setContainerItems(inputList)){
       throw new RuntimeException("The list of items already contains this"
-          + " value");
+          + " value. Please check your input for duplicates.");
     }
   }
   
