@@ -39,7 +39,10 @@ import org.tmatesoft.svn.core.wc.SVNWCUtil;
 public class SVNFunctionality{
   private static Repository repo;
   private static SVNRepository svnRepo = null;
-  
+  private static String cwd = "";
+  private static String OS = "";
+  private static final String httpJsonFile = "HTTPOutput.json";
+  private static final String allOutputTextFile = "all_output.txt";
   /**
    * Makes a connection to each of the repositories and calls helper function
    * to put the correct information in pertaining containers. 
@@ -48,6 +51,9 @@ public class SVNFunctionality{
    *                      Exception is thrown.
    */
   public static void connectToRepo() throws SVNException{
+    
+    getCWD();
+    
     //Declaring local variables so a new instantiation does not need to be made
     //each time
     String userName = "";
@@ -80,7 +86,16 @@ public class SVNFunctionality{
       //SVN connection is established here
       svnRepo.setAuthenticationManager(admin);
       
-      testSVNFunction();
+      //testSVNFunction();
+      try {
+        System.out.println("Established Connection to: " + svnRepo.getRepositoryRoot(true));
+        System.out.println("\n<======== Initialize Testing =========>");
+        System.out.println("Latest revision number of the repo: " + svnRepo.getLatestRevision());
+        System.out.println("<======== Testing  Complete =========>\n");
+      } catch (SVNException e) {
+        e.printStackTrace();
+      }
+      
       
       try {
         listPrj(svnRepo);
@@ -123,10 +138,9 @@ public class SVNFunctionality{
     // Using iterator to handle traverse in the pr_names list
     Iterator<?> itr=pr_names_list.iterator();
     
-    //David's File
-    File myfile = new File("C:/Users/d2chau/Desktop/all_output.txt");
-    FileWriter jsonFile = null;
-
+    File myfile = new File(cwd + allOutputTextFile);
+    System.out.println("Creating " + myfile);
+    
     // If the file exist delete it first
     if (myfile.exists()){
       myfile.delete();     
@@ -138,7 +152,6 @@ public class SVNFunctionality{
     // Create and output to a file 
     try
     {
-      jsonFile = new FileWriter("C:/Users/d2chau/Desktop/JSON_output.json");
       ps=new PrintStream(new FileOutputStream(myfile,true));
  
       // If the pr_name list has more than one element
@@ -168,9 +181,7 @@ public class SVNFunctionality{
         
         repo.addProject(tempProject);
         tempProject = new Project();
-        
-        jsonFile.write(jsonObj.toJSONString());
- 
+         
         localFlag = false;
       }
       localFlag = true;
@@ -182,8 +193,9 @@ public class SVNFunctionality{
     finally{
       if(ps != null){
         ps.close();
-        jsonFile.close();
       }
+      System.out.println("Finished creating " + myfile);
+
       return localFlag;
     }
   }
@@ -402,11 +414,12 @@ public class SVNFunctionality{
     httpJSONObject.put(Alias, httpJSONArray);
     
     try {
-      FileWriter file = new FileWriter("C:/Users/d2chau/Desktop/HTTPOutput.json");
+      FileWriter file = new FileWriter(cwd + httpJsonFile);
+      System.out.println("Creating " + cwd + httpJsonFile);
       file.write(httpJSONObject.toJSONString());
       file.flush();
       file.close();
-      System.out.println("Your http JSON file has been created.");
+      System.out.println("Finished creating " + cwd + httpJsonFile);
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -425,8 +438,9 @@ public class SVNFunctionality{
     ArrayList<Project> projectsList = repo.getProjectArrayList();
     
     String Alias = repo.getAlias();
-    String fileLocation = "C:/Users/d2chau/Desktop/" + Alias + ".json";
-
+    String fileLocation = cwd + Alias + ".json";
+    System.out.println("Creating " + fileLocation);
+    
     for(Project p : projectsList){
       tempJArray.add(p.formatTrunkToJSON());
       tempJArray.add(p.formatTagToJSON());
@@ -447,9 +461,79 @@ public class SVNFunctionality{
       file.write(parentJObj.toJSONString());
       file.flush();
       file.close();
-      System.out.println("Your Project JSON file has been created.");
+      System.out.println("Finished creating " + fileLocation);
     } catch (IOException e) {
       e.printStackTrace();
     }
+  }
+  
+  /**
+   * Sets the current working directory along with checks the operating system
+   * as well. Prompts the user with more information. 
+   */
+  private static void getCWD(){
+    OS = System.getProperty("os.name").toLowerCase();
+    cwd = System.getProperty("user.dir");
+
+    if (isWindows()) {
+      System.out.println("This is Windows");
+      System.out.println("Your current working directory is: ");
+      cwd += '\\';
+    } else if (isMac()) {
+      System.out.println("This is Mac");
+      System.out.println("Your current working directory is: ");
+      cwd += '/';
+    } else if (isUnix()) {
+      System.out.println("This is Unix or Linux");
+      System.out.println("Your current working directory is: ");
+      cwd += '/';
+    } else if (isSolaris()) {
+      System.out.println("This is Solaris");
+      System.out.println("Sorry Solaris is not supported!");
+    } else {
+      System.out.println("Sorry your OS is not supported!");
+    }
+    
+    System.out.println("All files will be created here: ");
+    System.out.println(cwd);
+    System.out.println("<- Please be advised, only Mozilla Firefox and Google "
+        + "Chrome with HTML5 support is capable of viewing the SVN graph. ->");
+  }
+  
+  /**
+   * Checks to see if the operating system is Windows based. 
+   * @return true if the operating system is Windows base
+   *         false if the operating system is not Windows base
+   */
+  public static boolean isWindows() {
+    return (OS.indexOf("win") >= 0);
+  }
+ 
+  /**
+   * Checks to see if the operating system is Mac based. 
+   * @return true if the operating system is Mac base
+   *         false if the operating system is not Mac base
+   */
+  public static boolean isMac() {
+    return (OS.indexOf("mac") >= 0);
+  }
+ 
+  /**
+   * Checks to see if the operating system is Linux or Unix based. 
+   * @return true if the operating system is Linux or Unix base
+   *         false if the operating system is not Linux or Unix base
+   */
+  public static boolean isUnix() {
+    return (OS.indexOf("nix") >= 0 || OS.indexOf("nux") >= 0 ||
+        OS.indexOf("aix") > 0 );
+  }
+ 
+  /**
+   * Checks to see if the operating system is Solaris based. 
+   * @return true if the operating system is Solaris base
+   *         false if the operating system is not Solaris base
+   */
+  public static boolean isSolaris() {
+    return (OS.indexOf("sunos") >= 0);
   }
 }
