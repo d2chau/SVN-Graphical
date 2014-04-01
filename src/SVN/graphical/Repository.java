@@ -18,6 +18,7 @@ public class Repository {
   private HttpControl httpObj;
   private ArrayList<HttpControl> httpArrayObj = new ArrayList<HttpControl>();
   private ArrayList<Project> projectsList = new ArrayList<Project>();
+  private static final String httpFile = "httpConfig.txt";
 
   //Default constructor which will parse the http config file when called upon.
   public Repository(){
@@ -36,7 +37,8 @@ public class Repository {
     try {
       String tempStr = "";
       String sCurrentLine;
-      String httpConfigFileLocation = "C:\\Users\\d2chau\\Documents\\UCD Academics\\Fall 2013\\CSCI 4738 Senior Design I\\java program\\SVN_Graphical_View\\src\\SVN\\graphical\\httpConfig.txt"; 
+      String file = System.getProperty("user.dir");
+      String httpConfigFileLocation = file + httpFile; 
       httpObj = new HttpControl(httpConfigFileLocation);
 
       br = new BufferedReader(new FileReader(httpConfigFileLocation));
