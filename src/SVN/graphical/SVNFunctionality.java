@@ -148,7 +148,6 @@ public class SVNFunctionality{
     
     PrintStream ps = null;
 
-    JSONObject jsonObj = new JSONObject();
     // Create and output to a file 
     try
     {
@@ -162,22 +161,20 @@ public class SVNFunctionality{
         SVNDirEntry prjName=(SVNDirEntry) itr.next();
         
         // Printing project names
+        System.out.println("Project Name: " + prjName.getName());
         tempProject.setProjectName(prjName.getName());
-        jsonObj.put("name", prjName.getName());
         
         //retrieving date
         tempProject.setProjectDate(dateFormat.format(prjName.getDate()));
-        jsonObj.put("date", dateFormat.format(prjName.getDate()));
         
         // Printing latest revision of the project
         tempProject.setProjectRevNum(prjName.getRevision());
-        jsonObj.put("revNum", prjName.getRevision());
         
         // keep track directory level
         int dir_lev=0;
         
         // Access each project to output trunk, tags and branches
-        listElemPrj(svnRepo, "/"+prjName.getName(), dir_lev, tempProject, ps);
+        listElemPrj(svnRepo, '/'+prjName.getName(), dir_lev, tempProject, ps);
         
         repo.addProject(tempProject);
         tempProject = new Project();
@@ -235,11 +232,10 @@ public class SVNFunctionality{
    // A project always has trunk, tags and branches
    // Continue print out the trunk, tags and branches
    while (itr.hasNext()){
-     
+
      //  The next element of the iteration
      SVNDirEntry dName = (SVNDirEntry) itr.next();
      
-     // Format
      //BASE
      if ((dName.getName()).toLowerCase().equals("trunk"))
      {
@@ -248,6 +244,7 @@ public class SVNFunctionality{
        // Printing latest revision of the trunk, tags, and branches
        ps.print(";" + dName.getRevision());
        ps.println(";" + dateFormat.format(dName.getDate()));
+       System.out.println(dName.getName() + ' ' + dName.getRevision());
      }
      //BASE
      else if ((dName.getName()).toLowerCase().equals("branches"))
@@ -257,7 +254,7 @@ public class SVNFunctionality{
        // Printing latest revision of the trunk, tags, and branches
        ps.print(";" + dName.getRevision());
        ps.println(";" + dateFormat.format(dName.getDate()));
-       
+       System.out.println(dName.getName() + ' ' + dName.getRevision());
      }
      //BASE
      else if ((dName.getName()).toLowerCase().equals("tags"))
@@ -267,6 +264,7 @@ public class SVNFunctionality{
        // Printing latest revision of the trunk, tags, and branches
        ps.print(";" + dName.getRevision());
        ps.println(";" + dateFormat.format(dName.getDate()));
+       System.out.println(dName.getName() + ' ' + dName.getRevision());
      }
      //ITEMS
      else if (dName.getKind()==SVNNodeKind.FILE)
@@ -274,7 +272,7 @@ public class SVNFunctionality{
        String u=url+"/"+dName.getName();
        if(u.contains("trunk")||u.contains("Trunk"))
        {
-         tempProject.addTrunkItems(dName.getName(), dName.getRevision(), dateFormat.format(dName.getDate()));
+         //tempProject.addTrunkItems(dName.getName(), dName.getRevision(), dateFormat.format(dName.getDate()));
          ps.print("<trunkitems>"+ dName.getName());
          // Printing latest revision of the trunk, tags, and branches
          ps.print(";" + dName.getRevision());
@@ -283,7 +281,7 @@ public class SVNFunctionality{
        } 
        if (u.contains("tags")||u.contains("Tags"))
        {
-         tempProject.addTagItems(dName.getName(), dName.getRevision(), dateFormat.format(dName.getDate()));
+         //tempProject.addTagItems(dName.getName(), dName.getRevision(), dateFormat.format(dName.getDate()));
          ps.print("<tagitems>" + dName.getName()); 
          // Printing latest revision of the trunk, tags, and branches
          ps.print(";" + dName.getRevision());
@@ -300,14 +298,14 @@ public class SVNFunctionality{
          if(u.contains("trunk"))
          {
            ps.print("<trunkitems>"+ dName.getName());
-           tempProject.addTrunkItems(dName.getName(), dName.getRevision(), dateFormat.format(dName.getDate()));
+           //tempProject.addTrunkItems(dName.getName(), dName.getRevision(), dateFormat.format(dName.getDate()));
            // Printing latest revision of the trunk, tags, and branches
            ps.print(";" + dName.getRevision());
            ps.println(";" + dateFormat.format(dName.getDate()));
            continue;
          }   
          if (u.contains("tags")){
-           tempProject.addTagItems(dName.getName(), dName.getRevision(), dateFormat.format(dName.getDate()));
+           //tempProject.addTagItems(dName.getName(), dName.getRevision(), dateFormat.format(dName.getDate()));
            ps.print("<tagitems>" + dName.getName()); 
            // Printing latest revision of the trunk, tags, and branches
            ps.print(";" + dName.getRevision());
@@ -325,6 +323,7 @@ public class SVNFunctionality{
          }
        }
        
+       /*
        // if u does not contain branches, tags, or trunk 
        // this directory is a subproject
        else
@@ -333,7 +332,7 @@ public class SVNFunctionality{
          // might not need if correct format 
          if(u.toLowerCase().contains("trunk"))
          {
-           tempProject.addTrunkItems(dName.getName(), dName.getRevision(), dateFormat.format(dName.getDate()));
+           //tempProject.addTrunkItems(dName.getName(), dName.getRevision(), dateFormat.format(dName.getDate()));
            ps.print("<trunkitems>"+dName.getName());
            ps.print(";" + dName.getRevision());
            ps.println(";" + dateFormat.format(dName.getDate()));
@@ -341,7 +340,7 @@ public class SVNFunctionality{
          }
          if(u.toLowerCase().contains("tags"))
          {
-           tempProject.addTagItems(dName.getName(), dName.getRevision(), dateFormat.format(dName.getDate()));
+           //tempProject.addTagItems(dName.getName(), dName.getRevision(), dateFormat.format(dName.getDate()));
            ps.print("<tagitems>"+dName.getName());
            ps.print(";" + dName.getRevision());
            ps.println(";" + dateFormat.format(dName.getDate()));
@@ -354,8 +353,9 @@ public class SVNFunctionality{
            ps.println(";" + dateFormat.format(dName.getDate()));
          }
        }
-         
+       */
      }
+     /*
      else
      {
        ps.print(dName.getName());  
@@ -363,7 +363,8 @@ public class SVNFunctionality{
        ps.print(";" + dName.getRevision());
        ps.println(";" + dateFormat.format(dName.getDate()));
      }
-
+     */
+     
      // Check if current selected item is a directory
      if (dName.getKind()==SVNNodeKind.DIR)
      {
@@ -397,8 +398,8 @@ public class SVNFunctionality{
   
   /**
    * This function creates the httpjson file that is used to display to user
-   * on the website. Thi function will be called by each of the repositories to
-   * make it all in one file.
+   * on the website. This function will be called by each of the repositories
+   * to make it all in one file.
    */
   @SuppressWarnings("unchecked")
   private static void writeHttpJSONFile(){
@@ -446,14 +447,21 @@ public class SVNFunctionality{
       tempJArray.add(p.formatTagToJSON());
       tempJArray.add(p.formatBranchToJSON());
       
-      tempJObj.put("Children", tempJArray);
+      //Getting the project details at the base level
+      tempJObj.put("children", tempJArray);
       tempJObj.put("Name", p.getProjectName());
-      tempJObj.put("Date", p.getProjectDate());
+      tempJObj.put("date", p.getProjectDate());
       tempJObj.put("Rev", p.getProjectRevNum());
       
+      System.out.println("In Function Name: " + p.getProjectName());
+      System.out.println("In Function Trunk: " + p.formatTrunkToJSON());
+      System.out.println("In Function J Array: " + tempJArray);
+      
       projectJSONArray.add(tempJObj);
+      tempJArray = new JSONArray();
       tempJObj = new JSONObject();
     }
+    //Makes the general Project parent 
     parentJObj.put("Projects", projectJSONArray);
     
     try {
@@ -476,19 +484,19 @@ public class SVNFunctionality{
     cwd = System.getProperty("user.dir");
 
     if (isWindows()) {
-      System.out.println("This is Windows");
+      System.out.println("This is Windows Device");
       System.out.println("Your current working directory is: ");
       cwd += '\\';
     } else if (isMac()) {
-      System.out.println("This is Mac");
+      System.out.println("This is Mac Device");
       System.out.println("Your current working directory is: ");
       cwd += '/';
     } else if (isUnix()) {
-      System.out.println("This is Unix or Linux");
+      System.out.println("This is Unix or Linux Device");
       System.out.println("Your current working directory is: ");
       cwd += '/';
     } else if (isSolaris()) {
-      System.out.println("This is Solaris");
+      System.out.println("This is Solaris Device");
       System.out.println("Sorry Solaris is not supported!");
     } else {
       System.out.println("Sorry your OS is not supported!");
@@ -496,8 +504,9 @@ public class SVNFunctionality{
     
     System.out.println("All files will be created here: ");
     System.out.println(cwd);
-    System.out.println("<- Please be advised, only Mozilla Firefox and Google "
-        + "Chrome with HTML5 support is capable of viewing the SVN graph. ->");
+    System.out.println("\n<- Please be advised, only Mozilla Firefox and"
+        + " Google Chrome with HTML5 support is capable of viewing the SVN "
+        + "graph. ->\n");
   }
   
   /**
