@@ -161,7 +161,6 @@ public class SVNFunctionality{
         SVNDirEntry prjName=(SVNDirEntry) itr.next();
         
         // Printing project names
-        System.out.println("Project Name: " + prjName.getName());
         tempProject.setProjectName(prjName.getName());
         
         //retrieving date
@@ -452,11 +451,7 @@ public class SVNFunctionality{
       tempJObj.put("Name", p.getProjectName());
       tempJObj.put("date", p.getProjectDate());
       tempJObj.put("Rev", p.getProjectRevNum());
-      
-      System.out.println("In Function Name: " + p.getProjectName());
-      System.out.println("In Function Trunk: " + p.formatTrunkToJSON());
-      System.out.println("In Function J Array: " + tempJArray);
-      
+
       projectJSONArray.add(tempJObj);
       tempJArray = new JSONArray();
       tempJObj = new JSONObject();
