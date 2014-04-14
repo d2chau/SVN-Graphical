@@ -29,5 +29,6 @@ public class Main {
   
   public static void main(String[] argv) throws SVNException{
     SVNFunctionality.connectToRepo();
+    System.out.println("The application has been completed.");
   }
 }
