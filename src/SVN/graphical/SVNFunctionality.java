@@ -74,7 +74,7 @@ public class SVNFunctionality{
       pw = hcObj.getPW();
       repoHttpAddr = hcObj.getHTTPAddr();
 
-      System.out.println("Connecting to the SVN server...\n");
+      System.out.println("\nConnecting to the SVN server...\n");
       //Creating the repo using the svn_url provided
       svnRepo = SVNRepositoryFactory.create(SVNURL.parseURIEncoded
           (repoHttpAddr));
@@ -86,16 +86,7 @@ public class SVNFunctionality{
       //SVN connection is established here
       svnRepo.setAuthenticationManager(admin);
       
-      //testSVNFunction();
-      try {
-        System.out.println("Established Connection to: " + svnRepo.getRepositoryRoot(true));
-        System.out.println("\n<======== Initialize Testing =========>");
-        System.out.println("Latest revision number of the repo: " + svnRepo.getLatestRevision());
-        System.out.println("<======== Testing  Complete =========>\n");
-      } catch (SVNException e) {
-        e.printStackTrace();
-      }
-      
+      testSVNFunction();
       
       try {
         listPrj(svnRepo);
@@ -126,7 +117,7 @@ public class SVNFunctionality{
    * @throws IOException  Throws IO Exception if the creation or closing of the
    *                      file was not properly done.
    */
-  @SuppressWarnings({ "finally", "unchecked" })
+  @SuppressWarnings({ "finally"})
   public static boolean listPrj(SVNRepository svnRepo) throws SVNException, IOException{
     boolean localFlag = false;
     Project tempProject = new Project();
@@ -243,7 +234,6 @@ public class SVNFunctionality{
        // Printing latest revision of the trunk, tags, and branches
        ps.print(";" + dName.getRevision());
        ps.println(";" + dateFormat.format(dName.getDate()));
-       System.out.println(dName.getName() + ' ' + dName.getRevision());
      }
      //BASE
      else if ((dName.getName()).toLowerCase().equals("branches"))
@@ -253,7 +243,6 @@ public class SVNFunctionality{
        // Printing latest revision of the trunk, tags, and branches
        ps.print(";" + dName.getRevision());
        ps.println(";" + dateFormat.format(dName.getDate()));
-       System.out.println(dName.getName() + ' ' + dName.getRevision());
      }
      //BASE
      else if ((dName.getName()).toLowerCase().equals("tags"))
@@ -263,7 +252,6 @@ public class SVNFunctionality{
        // Printing latest revision of the trunk, tags, and branches
        ps.print(";" + dName.getRevision());
        ps.println(";" + dateFormat.format(dName.getDate()));
-       System.out.println(dName.getName() + ' ' + dName.getRevision());
      }
      //ITEMS
      else if (dName.getKind()==SVNNodeKind.FILE)
@@ -313,7 +301,6 @@ public class SVNFunctionality{
          }
          else
          {
-         //  long max=0;
            tempProject.addBranchItems(dName.getName(), dName.getRevision(), dateFormat.format(dName.getDate()));
            ps.print("<branchinglevel>" + dName.getName()); 
            // Printing latest revision of the trunk, tags, and branches
