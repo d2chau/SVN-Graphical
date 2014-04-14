@@ -50,10 +50,9 @@ public class Project {
     baseBranch = new ItemInfo();
     baseTag = new ItemInfo();
     
-    trunkItems.clear();
-    branchItems.clear();
-    tagItems.clear();
-
+    trunkItems = new ArrayList<ItemInfo>();
+    branchItems = new ArrayList<ItemInfo>();
+    tagItems = new ArrayList<ItemInfo>();
   }
   
   /**
@@ -422,13 +421,13 @@ public class Project {
         
     for(ItemInfo i : trunkItems){
       jObject.put("Name", i.getName());
-      jObject.put("Date", i.getDate());
+      jObject.put("date", i.getDate());
       jObject.put("Rev", i.getRevNum());
       
       jArray.add(jObject);
       jObject = new JSONObject();
     }
-    parentJObj.put("Children", jArray);
+    parentJObj.put("children", jArray);
     
     return parentJObj;
   }
@@ -448,13 +447,13 @@ public class Project {
         
     for(ItemInfo i : tagItems){
       jObject.put("Name", i.getName());
-      jObject.put("Date", i.getDate());
+      jObject.put("date", i.getDate());
       jObject.put("Rev", i.getRevNum());
       
       jArray.add(jObject);
       jObject = new JSONObject();
     }
-    parentJObj.put("Children", jArray);
+    parentJObj.put("children", jArray);
     
     return parentJObj;
   }
@@ -474,13 +473,13 @@ public class Project {
         
     for(ItemInfo i : branchItems){
       jObject.put("Name", i.getName());
-      jObject.put("Date", i.getDate());
+      jObject.put("date", i.getDate());
       jObject.put("Rev", i.getRevNum());
       
       jArray.add(jObject);
       jObject = new JSONObject();
     }
-    parentJObj.put("Children", jArray);
+    parentJObj.put("children", jArray);
     
     return parentJObj;
   }
@@ -495,7 +494,7 @@ public class Project {
     
     trunkJObj = formatTrunkItems();
     trunkJObj.put("Name", baseTrunk.getName());
-    trunkJObj.put("Date", baseTrunk.getDate());
+    trunkJObj.put("date", baseTrunk.getDate());
     trunkJObj.put("Rev", baseTrunk.getRevNum());
     
     return trunkJObj;
@@ -511,7 +510,7 @@ public class Project {
     
     tagJObj = formatTagItems();
     tagJObj.put("Name", baseTag.getName());
-    tagJObj.put("Date", baseTag.getDate());
+    tagJObj.put("date", baseTag.getDate());
     tagJObj.put("Rev", baseTag.getRevNum());
     
     return tagJObj;
@@ -527,7 +526,7 @@ public class Project {
     
     branchJObj = formatBranchItems();
     branchJObj.put("Name", baseBranch.getName());
-    branchJObj.put("Date", baseBranch.getDate());
+    branchJObj.put("date", baseBranch.getDate());
     branchJObj.put("Rev", baseBranch.getRevNum());
     
     return branchJObj;
