@@ -12,10 +12,6 @@
 
 package SVN.graphical;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -42,7 +38,6 @@ public class SVNFunctionality{
   private static String cwd = "";
   private static String OS = "";
   private static final String httpJsonFile = "HTTPOutput.json";
-  private static final String allOutputTextFile = "all_output.txt";
   /**
    * Makes a connection to each of the repositories and calls helper function
    * to put the correct information in pertaining containers. 
@@ -129,21 +124,9 @@ public class SVNFunctionality{
     // Using iterator to handle traverse in the pr_names list
     Iterator<?> itr=pr_names_list.iterator();
     
-    File myfile = new File(cwd + allOutputTextFile);
-    System.out.println("Creating " + myfile);
-    
-    // If the file exist delete it first
-    if (myfile.exists()){
-      myfile.delete();     
-    }
-    
-    PrintStream ps = null;
-
     // Create and output to a file 
     try
-    {
-      ps=new PrintStream(new FileOutputStream(myfile,true));
- 
+    { 
       // If the pr_name list has more than one element
       // Continue print out the project names
       while (itr.hasNext()){
@@ -164,7 +147,7 @@ public class SVNFunctionality{
         int dir_lev=0;
         
         // Access each project to output trunk, tags and branches
-        listElemPrj(svnRepo, '/'+prjName.getName(), dir_lev, tempProject, ps);
+        listElemPrj(svnRepo, '/'+prjName.getName(), dir_lev, tempProject);
         
         repo.addProject(tempProject);
         tempProject = new Project();
@@ -173,16 +156,7 @@ public class SVNFunctionality{
       }
       localFlag = true;
     }
-    catch (FileNotFoundException e) 
-    {
-      e.printStackTrace();
-    }
     finally{
-      if(ps != null){
-        ps.close();
-      }
-      System.out.println("Finished creating " + myfile + '\n');
-
       return localFlag;
     }
   }
@@ -207,8 +181,8 @@ public class SVNFunctionality{
    *                      or cannot connect to the directory, an exception will
    *                      be thrown.
    */
-  public static void listElemPrj(SVNRepository repo, String url, int level, Project tempProject,
-      PrintStream ps) throws SVNException{
+  public static void listElemPrj(SVNRepository repo, String url, int level, Project tempProject
+      ) throws SVNException{
    // Creating a list of directories
    // trunk, tags and branches
    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -230,28 +204,16 @@ public class SVNFunctionality{
      if ((dName.getName()).toLowerCase().equals("trunk"))
      {
        tempProject.setBaseTrunk(dName.getName(), dName.getRevision(), dateFormat.format(dName.getDate()));
-       ps.print("<basetrunk>"+dName.getName());
-       // Printing latest revision of the trunk, tags, and branches
-       ps.print(";" + dName.getRevision());
-       ps.println(";" + dateFormat.format(dName.getDate()));
      }
      //BASE
      else if ((dName.getName()).toLowerCase().equals("branches"))
      {
        tempProject.setBaseBranch(dName.getName(), dName.getRevision(), dateFormat.format(dName.getDate()));
-       ps.print("<basebranch>"+dName.getName());
-       // Printing latest revision of the trunk, tags, and branches
-       ps.print(";" + dName.getRevision());
-       ps.println(";" + dateFormat.format(dName.getDate()));
      }
      //BASE
      else if ((dName.getName()).toLowerCase().equals("tags"))
      {
        tempProject.setBaseTag(dName.getName(), dName.getRevision(), dateFormat.format(dName.getDate()));       
-       ps.print("<basetag>"+dName.getName());
-       // Printing latest revision of the trunk, tags, and branches
-       ps.print(";" + dName.getRevision());
-       ps.println(";" + dateFormat.format(dName.getDate()));
      }
      //ITEMS
      else if (dName.getKind()==SVNNodeKind.FILE)
@@ -260,19 +222,11 @@ public class SVNFunctionality{
        if(u.contains("trunk")||u.contains("Trunk"))
        {
          //tempProject.addTrunkItems(dName.getName(), dName.getRevision(), dateFormat.format(dName.getDate()));
-         ps.print("<trunkitems>"+ dName.getName());
-         // Printing latest revision of the trunk, tags, and branches
-         ps.print(";" + dName.getRevision());
-         ps.println(";" + dateFormat.format(dName.getDate()));
          continue;
        } 
        if (u.contains("tags")||u.contains("Tags"))
        {
          //tempProject.addTagItems(dName.getName(), dName.getRevision(), dateFormat.format(dName.getDate()));
-         ps.print("<tagitems>" + dName.getName()); 
-         // Printing latest revision of the trunk, tags, and branches
-         ps.print(";" + dName.getRevision());
-         ps.println(";" + dateFormat.format(dName.getDate()));
          continue;
        }
      }
@@ -284,28 +238,16 @@ public class SVNFunctionality{
            
          if(u.contains("trunk"))
          {
-           ps.print("<trunkitems>"+ dName.getName());
            //tempProject.addTrunkItems(dName.getName(), dName.getRevision(), dateFormat.format(dName.getDate()));
-           // Printing latest revision of the trunk, tags, and branches
-           ps.print(";" + dName.getRevision());
-           ps.println(";" + dateFormat.format(dName.getDate()));
            continue;
          }   
          if (u.contains("tags")){
            //tempProject.addTagItems(dName.getName(), dName.getRevision(), dateFormat.format(dName.getDate()));
-           ps.print("<tagitems>" + dName.getName()); 
-           // Printing latest revision of the trunk, tags, and branches
-           ps.print(";" + dName.getRevision());
-           ps.println(";" + dateFormat.format(dName.getDate()));
            continue;
          }
          else
          {
            tempProject.addBranchItems(dName.getName(), dName.getRevision(), dateFormat.format(dName.getDate()));
-           ps.print("<branchinglevel>" + dName.getName()); 
-           // Printing latest revision of the trunk, tags, and branches
-           ps.print(";" + dName.getRevision());
-           ps.println(";" + dateFormat.format(dName.getDate()));
          }
        }
        
@@ -355,11 +297,11 @@ public class SVNFunctionality{
      if (dName.getKind()==SVNNodeKind.DIR)
      {
        if (url==""){
-         listElemPrj(repo, dName.getName(), level, tempProject, ps);
+         listElemPrj(repo, dName.getName(), level, tempProject);
        }
        // Access sub-directories if available and get directory name
        else{
-         listElemPrj(repo, url+"/"+dName.getName(), level, tempProject, ps);   
+         listElemPrj(repo, url+"/"+dName.getName(), level, tempProject);   
        }
      }
    }
