@@ -16,8 +16,7 @@ import java.util.ArrayList;
 
 public class Repository {
   private HttpControl httpObj;
-  private static String cwd = "";
-  private static String OS = "";
+  private OS_Check osInfo = new OS_Check();
   private ArrayList<HttpControl> httpArrayObj = new ArrayList<HttpControl>();
   private ArrayList<Project> projectsList = new ArrayList<Project>();
   private static final String httpFile = "httpConfig.txt";
@@ -40,8 +39,9 @@ public class Repository {
       String tempStr = "";
       String sCurrentLine;
 
-      getCWD();
-      String httpConfigFileLocation = cwd + httpFile; 
+      osInfo.getOS();
+      osInfo.getCWD();
+      String httpConfigFileLocation = osInfo.getCWD() + httpFile; 
       httpObj = new HttpControl(httpConfigFileLocation);
 
       br = new BufferedReader(new FileReader(httpConfigFileLocation));
@@ -156,63 +156,5 @@ public class Repository {
    */
   protected void addProject(Project proj){
     this.projectsList.add(proj);
-  }
-
-  /**
-   * Sets the current working directory along with checks the operating system
-   * as well. Prompts the user with more information. 
-   */
-  private static void getCWD(){
-    OS = System.getProperty("os.name").toLowerCase();
-    cwd = System.getProperty("user.dir");
-
-    if (isWindows()) {
-      cwd += '\\';
-    } else if (isMac()) {
-      cwd += '/';
-    } else if (isUnix()) {
-      cwd += '/';
-    } else if (isSolaris()) {
-      System.out.println("Sorry Solaris is not supported!");
-    } else {
-      System.out.println("Sorry your OS is not supported!");
-    }
-  }
-  
-  /**
-   * Checks to see if the operating system is Windows based. 
-   * @return true if the operating system is Windows base
-   *         false if the operating system is not Windows base
-   */
-  public static boolean isWindows() {
-    return (OS.indexOf("win") >= 0);
-  }
- 
-  /**
-   * Checks to see if the operating system is Mac based. 
-   * @return true if the operating system is Mac base
-   *         false if the operating system is not Mac base
-   */
-  public static boolean isMac() {
-    return (OS.indexOf("mac") >= 0);
-  }
- 
-  /**
-   * Checks to see if the operating system is Linux or Unix based. 
-   * @return true if the operating system is Linux or Unix base
-   *         false if the operating system is not Linux or Unix base
-   */
-  public static boolean isUnix() {
-    return (OS.indexOf("nix") >= 0 || OS.indexOf("nux") >= 0 ||
-        OS.indexOf("aix") > 0 );
-  }
- 
-  /**
-   * Checks to see if the operating system is Solaris based. 
-   * @return true if the operating system is Solaris base
-   *         false if the operating system is not Solaris base
-   */
-  public static boolean isSolaris() {
-    return (OS.indexOf("sunos") >= 0);
   }
 }
