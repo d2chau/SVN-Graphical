@@ -35,8 +35,7 @@ import org.tmatesoft.svn.core.wc.SVNWCUtil;
 public class SVNFunctionality{
   private static Repository repo;
   private static SVNRepository svnRepo = null;
-  private static String cwd = "";
-  private static String OS = "";
+  private static OS_Check osInfo = new OS_Check();
   private static final String httpJsonFile = "HTTPOutput.json";
   /**
    * Makes a connection to each of the repositories and calls helper function
@@ -47,7 +46,7 @@ public class SVNFunctionality{
    */
   public static void connectToRepo() throws SVNException{
     
-    getCWD();
+    osInfo.find_OS_CWD();
     
     //Declaring local variables so a new instantiation does not need to be made
     //each time
@@ -343,12 +342,12 @@ public class SVNFunctionality{
     httpJSONObject.put(Alias, httpJSONArray);
     
     try {
-      FileWriter file = new FileWriter(cwd + httpJsonFile);
-      System.out.println("Creating " + cwd + httpJsonFile);
+      FileWriter file = new FileWriter(osInfo.getCWD() + httpJsonFile);
+      System.out.println("Creating " + osInfo.getCWD() + httpJsonFile);
       file.write(httpJSONObject.toJSONString());
       file.flush();
       file.close();
-      System.out.println("Finished creating " + cwd + httpJsonFile + '\n');
+      System.out.println("Finished creating " + osInfo.getCWD() + httpJsonFile + '\n');
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -367,7 +366,7 @@ public class SVNFunctionality{
     ArrayList<Project> projectsList = repo.getProjectArrayList();
     
     String Alias = repo.getAlias();
-    String fileLocation = cwd + Alias + ".json";
+    String fileLocation = osInfo.getCWD() + Alias + ".json";
     System.out.println("Creating " + fileLocation);
     
     for(Project p : projectsList){
@@ -399,74 +398,5 @@ public class SVNFunctionality{
     }
   }
   
-  /**
-   * Sets the current working directory along with checks the operating system
-   * as well. Prompts the user with more information. 
-   */
-  private static void getCWD(){
-    OS = System.getProperty("os.name").toLowerCase();
-    cwd = System.getProperty("user.dir");
 
-    if (isWindows()) {
-      System.out.println("This is Windows Device");
-      System.out.println("Your current working directory is: ");
-      cwd += '\\';
-    } else if (isMac()) {
-      System.out.println("This is Mac Device");
-      System.out.println("Your current working directory is: ");
-      cwd += '/';
-    } else if (isUnix()) {
-      System.out.println("This is Unix or Linux Device");
-      System.out.println("Your current working directory is: ");
-      cwd += '/';
-    } else if (isSolaris()) {
-      System.out.println("This is Solaris Device");
-      System.out.println("Sorry Solaris is not supported!");
-    } else {
-      System.out.println("Sorry your OS is not supported!");
-    }
-    
-    System.out.println("All files will be created here: ");
-    System.out.println(cwd);
-    System.out.println("\n<- Please be advised, only Mozilla Firefox and"
-        + " Google Chrome with HTML5 support is capable of viewing the SVN "
-        + "graph. ->\n");
-  }
-  
-  /**
-   * Checks to see if the operating system is Windows based. 
-   * @return true if the operating system is Windows base
-   *         false if the operating system is not Windows base
-   */
-  public static boolean isWindows() {
-    return (OS.indexOf("win") >= 0);
-  }
- 
-  /**
-   * Checks to see if the operating system is Mac based. 
-   * @return true if the operating system is Mac base
-   *         false if the operating system is not Mac base
-   */
-  public static boolean isMac() {
-    return (OS.indexOf("mac") >= 0);
-  }
- 
-  /**
-   * Checks to see if the operating system is Linux or Unix based. 
-   * @return true if the operating system is Linux or Unix base
-   *         false if the operating system is not Linux or Unix base
-   */
-  public static boolean isUnix() {
-    return (OS.indexOf("nix") >= 0 || OS.indexOf("nux") >= 0 ||
-        OS.indexOf("aix") > 0 );
-  }
- 
-  /**
-   * Checks to see if the operating system is Solaris based. 
-   * @return true if the operating system is Solaris base
-   *         false if the operating system is not Solaris base
-   */
-  public static boolean isSolaris() {
-    return (OS.indexOf("sunos") >= 0);
-  }
 }
