@@ -10,10 +10,10 @@
 package SVN.graphical;
 
 public class HttpControl {
-  private static String alias = "";
-  private static String HTTPAddr = "";
-  private static String userName = "";
-  private static String pw = "";
+  private String alias = "";
+  private String HTTPAddr = "";
+  private String userName = "";
+  private String pw = "";
   private String httpConfigFileLocation = "";
   
   /**
